@@ -1,0 +1,11 @@
+docker pull
+docker images
+docker run
+docker ps -a
+docker rmi
+docker rmi --force
+docker rm
+docker build -t 
+
+docker run -p 8000:80 frontend
+docker run -p 8080:80 backend
