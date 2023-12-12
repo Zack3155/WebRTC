@@ -80,8 +80,7 @@ function startup() {
 }
 
 // Upload the image
-// const backend_host = 'https://webapp-yukew.azurewebsites.net';
-backend_host = "http://localhost:8080";
+backend_host = "https://backendwebrtc.azurewebsites.net";
 function uploadImage(data) {
 	fetch(backend_host + "/images", {
 		method: "POST",
