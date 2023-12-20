@@ -9,3 +9,11 @@ docker build -t
 
 docker run -p 8000:80 frontend
 docker run -p 8080:80 backend
+
+docker login webrtczack.azurecr.io
+docker tag frontend webrtczack.azurecr.io/frontend
+docker push webrtczack.azurecr.io/frontend
+
+
+
+Azure AI services | Custom vision, Container registries, Azure DevOps Organizations, App Services
