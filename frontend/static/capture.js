@@ -80,7 +80,8 @@ function startup() {
 }
 
 // Upload the image
-backend_host = "https://backendwebrtc.azurewebsites.net";
+// backend_host = "https://backendwebrtc.azurewebsites.net";
+backend_host = "";
 function uploadImage(data) {
 	fetch(backend_host + "/images", {
 		method: "POST",
