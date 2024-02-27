@@ -36,9 +36,9 @@ def form():
     response = requests.post(BACKEND_HOST + '/form', data=request.data)
     return response.content
 
-@app.route('/users', methods=['POST'])
-def users():
-    response = requests.post(BACKEND_HOST + '/users', data=request.data)
+@app.route('/users/<userId>', methods=['GET'])
+def users(userId):
+    response = requests.get(BACKEND_HOST + '/users/'+ userId)
     return response.content
 
 if __name__ == '__main__': 
