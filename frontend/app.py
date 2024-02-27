@@ -38,7 +38,7 @@ def form():
 
 @app.route('/users', methods=['POST'])
 def users():
-    response = requests.post(NOSQL_HOST + '/users', data=request.data)
+    response = requests.post(BACKEND_HOST + '/users', data=request.data)
     return response.content
 
 if __name__ == '__main__': 
