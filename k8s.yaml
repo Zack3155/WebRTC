@@ -16,7 +16,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
         - name: backend
-          image: webrtczack.azurecr.io/backend:8
+          image: webrtczack.azurecr.io/backend:11
           env:
             - name: ALLOW_EMPTY_PASSWORD
               value: "yes"
@@ -58,7 +58,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
         - name: frontend
-          image: webrtczack.azurecr.io/frontend:8
+          image: webrtczack.azurecr.io/frontend:11
           ports:
             - containerPort: 80
           resources:
