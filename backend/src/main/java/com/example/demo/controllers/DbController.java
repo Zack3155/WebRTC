@@ -8,6 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dao.DbRepository;
 import com.example.demo.entities.Image;
 import com.example.demo.entities.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @CrossOrigin(origins = "${FRONTEND_HOST:*}")
@@ -29,8 +33,11 @@ public class DbController {
   @Qualifier("sqlDatabase")
   DbRepository sqlDatabase;
 
+  @Autowired
+  private StringRedisTemplate stringRedisTemplate;
+
   @RequestMapping(value = "/form", method = RequestMethod.POST)
-  public ResponseEntity<String> postForm(@RequestBody String data) throws JSONException {
+  public ResponseEntity<String> postForm(@RequestBody String data) throws JSONException, JsonProcessingException {
     JSONObject jsonObject = new JSONObject(data);
     String name = jsonObject.getString("name");
     String email = jsonObject.getString("email");
@@ -47,6 +54,7 @@ public class DbController {
 
     sqlDatabase.saveUser(user);
     sqlDatabase.saveImage(image);
+    saveCache(user);
 
     ResponseEntity<String> result = new ResponseEntity<String>(HttpStatus.OK);
 
@@ -65,6 +73,44 @@ public class DbController {
 
     return new ResponseEntity<Image>(image, HttpStatus.OK);
 
+  }
+
+  @GetMapping("/users/{userId}")
+    public ResponseEntity getUser(@PathVariable String userId){
+        try {
+            User user = readCache(userId);
+            System.out.println(userId);
+            return new ResponseEntity<User>(user, HttpStatus.OK);
+        } catch (Exception e){
+            System.out.println(e);
+            return new ResponseEntity<String>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+  private void saveCache(User user) throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    String json = mapper.writeValueAsString(user);
+    ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+    String key = user.getUserId();
+    ops.set(key, json);
+  }
+
+  private User readCache(String id) throws Exception {
+    ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+    User user = null;
+    if (!stringRedisTemplate.hasKey(id)) {
+      user = sqlDatabase.getUser(id);
+      System.out.println("cache miss!");
+      saveCache(user);
+    } else {
+      ObjectMapper mapper = new ObjectMapper();
+      String json = ops.get(id);
+      user = mapper.readValue(json, User.class);
+      System.out.println("cache hit!");
+    }
+    return user;
   }
 
 }

@@ -34,4 +34,7 @@ public class User {
     this.userName = userName;
     this.email = email;
   }
+
+  public User() {
+  }
 }
